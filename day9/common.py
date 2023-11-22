@@ -33,11 +33,11 @@ def countLowPoints( map, directions):
                 nextII = ii + dir[0]
                 nextJJ = jj + dir[1]
 
-                try:
+                validPoint = checkPointValidity( nextII, nextJJ, nRows, nCols)
+                
+                if validPoint:
                     adjacentHeight = map[ nextII, nextJJ]
-                    lowPoint = lowPoint and adjacentHeight >= currentHeight
-                except:
-                    continue
+                    if adjacentHeight <= currentHeight: lowPoint = False
 
                 if not lowPoint:
                     break
@@ -48,3 +48,69 @@ def countLowPoints( map, directions):
                 riskLevel = riskLevel + 1 + currentHeight
 
     return ( lowPoints, riskLevel)
+
+
+def checkPointValidity( ii, jj, nRows, nCols):
+
+    validPoint = ii >= 0 and jj >= 0
+    validPoint = validPoint and ii <= nRows - 1 and jj <= nCols - 1
+
+    return validPoint
+
+
+def computeBasins( map, directions):
+
+    ( nRows, nCols) = map.shape
+
+    mapped = []
+    basins = []
+
+    for ii in range( nRows ):
+        for jj in range( nCols ):
+
+            if map[ ii, jj] == 9: mapped.append( ( ii, jj) )
+            if ( ii, jj) in mapped: continue
+
+            mapped.append( ( ii, jj) )
+            nextPositions = [( ii, jj)]
+
+            basin = [( ii, jj)]
+            moving = True
+
+            while moving:
+
+                currentPositions = nextPositions
+                nextPositions = []
+                
+                for position in currentPositions:
+
+                    currentII = position[0]
+                    currentJJ = position[1]
+
+                    for dir in directions:
+                        
+                        nextII = currentII + dir[0]
+                        nextJJ = currentJJ + dir[1]
+                        nextPosition = ( nextII, nextJJ)
+
+                        validPoint = checkPointValidity( nextII, nextJJ, nRows, nCols)
+
+                        if not validPoint: continue
+                        
+                        if map[ nextII, nextJJ] == 9:
+                            mapped.append( nextPosition )
+
+                        if nextPosition not in mapped:
+
+                            mapped.append( nextPosition )
+
+                            nextPositions.append( nextPosition )
+                            basin.append( nextPosition )
+
+                if not nextPositions: moving = False
+
+            basins.append( basin )
+
+    return basins
+
+    

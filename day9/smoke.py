@@ -18,4 +18,13 @@ map = common.parseHeightMap( lines )
 print( lowPoints )
 print( riskLevel )
 
+basins = common.computeBasins( map, directions)
 
+basinSizes = []
+for basin in basins:
+
+    basinSize = len( basin )
+    basinSizes.append( basinSize )
+
+sortedBasinSizes = sorted( basinSizes, reverse = True)
+print( sortedBasinSizes[0] * sortedBasinSizes[1] * sortedBasinSizes[2] )
